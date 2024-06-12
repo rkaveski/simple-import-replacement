@@ -1,0 +1,33 @@
+{
+  "name": "simple-import-replacement",
+  "version": "1.0.4",
+  "description": "A script to replace relative imports with absolute imports in TypeScript and JavaScript files.",
+  "main": "replace-imports.js",
+  "bin": {
+    "replace-imports": "./replace-imports.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rodrigo K",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^7.2.0"
+  },
+  "keywords": [
+    "import",
+    "import-replacement",
+    "relative-to-absolute",
+    "typescript",
+    "javascript",
+    "module-paths",
+    "path-conversion",
+    "codebase",
+    "refactoring",
+    "project-structure",
+    "npx",
+    "npm",
+    "local-install",
+    "global-install"
+  ]
+}
