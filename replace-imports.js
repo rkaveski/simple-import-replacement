@@ -46,6 +46,11 @@ async function processFile(filePath, rootDir) {
 async function processFiles(files, rootDir) {
   let changedFiles = [];
   for (const file of files) {
+    const stats = await fs.promises.stat(file);
+    if (stats.isDirectory()) {
+      console.log(`Skipping directory: ${file}`);
+      continue;
+    }
     const changed = await processFile(file, rootDir);
     if (changed) {
       changedFiles.push(file);
@@ -54,6 +59,7 @@ async function processFiles(files, rootDir) {
   }
   return changedFiles;
 }
+
 
 /**
  * Main function to execute the script.
@@ -72,12 +78,8 @@ async function main() {
   let files = [];
 
   for (const pattern of patterns) {
-    if (fs.existsSync(pattern)) {
-      files.push(path.resolve(pattern));
-    } else {
-      const matchedFiles = await glob(pattern, { cwd: rootDir, absolute: true });
-      files = files.concat(matchedFiles);
-    }
+    const matchedFiles = await glob(pattern, { cwd: rootDir, absolute: true });
+    files = files.concat(matchedFiles);
   }
 
   if (!files.length) {
