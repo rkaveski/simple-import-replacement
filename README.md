@@ -42,7 +42,7 @@ yarn global add simple-import-replacement
 You can run the script directly using npx without installing it:
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
+npx simple-import-replacement
 ```
 
 ## Usage
@@ -54,7 +54,7 @@ Add a script to your `package.json`:
 ```json
 {
   "scripts": {
-    "replace-imports": "simple-import-replacement --root-dir /path/to/your/project/src '**/*.{ts,tsx,js,jsx}'"
+    "replace-imports": "simple-import-replacement"
   }
 }
 ```
@@ -76,7 +76,7 @@ yarn replace-imports
 Run the script directly:
 
 ```bash
-replace-imports --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
+replace-imports
 ```
 
 ### Using npx
@@ -84,40 +84,30 @@ replace-imports --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
 Run the script using npx:
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
+npx simple-import-replacement
 ```
 
 ### Additional Examples
 
-#### Single File
+#### Default behavior (scan for **/*.{ts,tsx,js,jsx} files in the current directory)
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src src/com/test/foo/bar/example.ts
+npx simple-import-replacement
 ```
 
-#### Two Files
+#### Specify a root directory (scan for **/*.{ts,tsx,js,jsx} files in the specified directory)
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src src/com/test/foo/bar/example.ts src/com/test/foo/another/anotherThing.ts
+npx simple-import-replacement /path/to/your/project/src
 ```
 
-#### Only TypeScript Files
+#### Specify a root directory and custom file patterns
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.ts"
+npx simple-import-replacement /path/to/your/project/src **/*.ts **/*.js
 ```
 
-#### Only JavaScript Files
-
-```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.js"
-```
-
-#### TypeScript Family Files (ts and tsx)
-
-```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx}"
-```
+These changes simplify the usage of the script by providing default behavior and allowing the root directory to be specified as the first argument without the need for the `--root-dir` flag.
 
 ## Example
 
@@ -148,7 +138,7 @@ export { MyComponent } from '../../components/MyComponent';
 Running the script:
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
+npx simple-import-replacement
 ```
 
 will update `example.ts` to:

@@ -67,14 +67,18 @@ async function processFiles(files, rootDir) {
  */
 async function main() {
   const args = process.argv.slice(2);
-  const rootDirIndex = args.findIndex(arg => arg === '--root-dir');
-  if (rootDirIndex === -1 || !args[rootDirIndex + 1]) {
-    console.error('Root directory must be specified with --root-dir <path>');
-    process.exit(1);
-  }
-  const rootDir = path.resolve(args[rootDirIndex + 1]);
+  let rootDir = process.cwd();
+  let patterns = ['**/*.{ts,tsx,js,jsx}'];
 
-  const patterns = args.slice(rootDirIndex + 2);
+  if (args.length > 0) {
+    rootDir = path.resolve(args[0]);
+    patterns = args.slice(1);
+  }
+
+  if (!patterns.length) {
+    patterns = ['**/*.{ts,tsx,js,jsx}'];
+  }
+
   let files = [];
 
   for (const pattern of patterns) {
@@ -83,7 +87,7 @@ async function main() {
   }
 
   if (!files.length) {
-    console.error('No files specified.');
+    console.error('No files found matching the specified patterns.');
     process.exit(1);
   }
 
