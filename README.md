@@ -5,7 +5,7 @@ A script to replace relative imports with absolute imports in TypeScript and Jav
 
 ## Description
 
-This script processes files in your project directory and converts relative import paths to absolute import paths based on the specified root directory. It supports `ts`, `tsx`, `js`, and `jsx` file extensions.
+This script processes files in your current directory (or a specified one) and its subdirectories, converting relative import paths to absolute import paths. It supports `ts`, `tsx`, `js`, and `jsx` file extensions.
 
 ## Installation
 
@@ -89,13 +89,13 @@ npx simple-import-replacement
 
 ### Additional Examples
 
-#### Default behavior (scan for **/*.{ts,tsx,js,jsx} files in the current directory)
+#### Default behavior (scan for **/*.{ts,tsx,js,jsx} files in the current directory and its subdirectories)
 
 ```bash
 npx simple-import-replacement
 ```
 
-#### Specify a root directory (scan for **/*.{ts,tsx,js,jsx} files in the specified directory)
+#### Specify a root directory (scan for **/*.{ts,tsx,js,jsx} files in the specified directory and its subdirectories)
 
 ```bash
 npx simple-import-replacement /path/to/your/project/src
@@ -106,8 +106,6 @@ npx simple-import-replacement /path/to/your/project/src
 ```bash
 npx simple-import-replacement /path/to/your/project/src **/*.ts **/*.js
 ```
-
-These changes simplify the usage of the script by providing default behavior and allowing the root directory to be specified as the first argument without the need for the `--root-dir` flag.
 
 ## Example
 
