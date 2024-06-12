@@ -42,7 +42,7 @@ yarn global add simple-import-replacement
 You can run the script directly using npx without installing it:
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src **/*.{ts,tsx,js,jsx}
+npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
 ```
 
 ## Usage
@@ -54,7 +54,7 @@ Add a script to your `package.json`:
 ```json
 {
   "scripts": {
-    "replace-imports": "simple-import-replacement --root-dir /path/to/your/project/src **/*.{ts,tsx,js,jsx}"
+    "replace-imports": "simple-import-replacement --root-dir /path/to/your/project/src '**/*.{ts,tsx,js,jsx}'"
   }
 }
 ```
@@ -76,7 +76,7 @@ yarn replace-imports
 Run the script directly:
 
 ```bash
-replace-imports --root-dir /path/to/your/project/src **/*.{ts,tsx,js,jsx}
+replace-imports --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
 ```
 
 ### Using npx
@@ -84,7 +84,7 @@ replace-imports --root-dir /path/to/your/project/src **/*.{ts,tsx,js,jsx}
 Run the script using npx:
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src **/*.{ts,tsx,js,jsx}
+npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
 ```
 
 ### Additional Examples
@@ -104,19 +104,19 @@ npx simple-import-replacement --root-dir /path/to/your/project/src src/com/test/
 #### Only TypeScript Files
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src **/*.ts
+npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.ts"
 ```
 
 #### Only JavaScript Files
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src **/*.js
+npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.js"
 ```
 
 #### TypeScript Family Files (ts and tsx)
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src **/*.{ts,tsx}
+npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx}"
 ```
 
 ## Example
@@ -148,7 +148,7 @@ export { MyComponent } from '../../components/MyComponent';
 Running the script:
 
 ```bash
-npx simple-import-replacement --root-dir /path/to/your/project/src **/*.{ts,tsx,js,jsx}
+npx simple-import-replacement --root-dir /path/to/your/project/src "**/*.{ts,tsx,js,jsx}"
 ```
 
 will update `example.ts` to:

@@ -1,6 +1,6 @@
 {
   "name": "simple-import-replacement",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A script to replace relative imports with absolute imports in TypeScript and JavaScript files.",
   "main": "replace-imports.js",
   "bin": {
