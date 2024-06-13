@@ -1,8 +1,16 @@
 {
   "name": "simple-import-replacement",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "A script to replace relative imports with absolute imports in TypeScript and JavaScript files.",
   "main": "replace-imports.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rkaveski/simple-import-replacement.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rkaveski/simple-import-replacement/issues"
+  },
+  "homepage": "https://github.com/rkaveski/simple-import-replacement#readme",
   "bin": {
     "replace-imports": "./replace-imports.js"
   },
