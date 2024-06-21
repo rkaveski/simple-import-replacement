@@ -1,11 +1,11 @@
 
 # Simple Import Replacement
 
-A script to replace relative imports with absolute imports in TypeScript and JavaScript files.
+A script to replace relative imports with absolute imports in TypeScript, JavaScript, and CSS files.
 
 ## Description
 
-This script processes files in your current directory (or a specified one) and its subdirectories, converting relative import paths to absolute import paths. It supports `ts`, `tsx`, `js`, and `jsx` file extensions.
+This script processes files in your current directory (or a specified one) and its subdirectories, converting relative import paths to absolute import paths. It supports `ts`, `tsx`, `js`, `jsx`, `css`, `scss`, `less`, and `sass` file extensions.
 
 ## Installation
 
@@ -87,24 +87,32 @@ Run the script using npx:
 npx simple-import-replacement
 ```
 
-### Additional Examples
+## Additional Examples
 
-#### Default behavior (scan for **/*.{ts,tsx,js,jsx} files in the current directory and its subdirectories)
+### Default behavior
+
+Scan for `**/*.{ts,tsx,js,jsx,css,scss,less,sass}` files in the current directory and its subdirectories:
 
 ```bash
 npx simple-import-replacement
 ```
 
-#### Specify a root directory (scan for **/*.{ts,tsx,js,jsx} files in the specified directory and its subdirectories)
+### Specify a root directory
+
+```bash
+npx simple-import-replacement --root-dir=/path/to/your/project/src
+```
+
+or
 
 ```bash
 npx simple-import-replacement /path/to/your/project/src
 ```
 
-#### Specify a root directory and custom file patterns
+### Specify a root directory and custom file patterns
 
 ```bash
-npx simple-import-replacement /path/to/your/project/src **/*.ts **/*.js
+npx simple-import-replacement /path/to/your/project/src **/*.ts **/*.js **/*.css
 ```
 
 ## Example
@@ -122,15 +130,23 @@ Suppose you have a project structure as follows:
 │   │   │       └── anotherThing.ts
 │   └── components/
 │       └── MyComponent.ts
+│       └── styles.css
 ```
 
 And your `example.ts` file contains the following imports:
 
-```typescript
+```javascript
 import something from './something';
 import anotherThing from '../another/anotherThing';
 import React from 'react';
 export { MyComponent } from '../../components/MyComponent';
+```
+
+And your `styles.css` file contains:
+
+```css
+@import './variables.css';
+@import '../components/common.css';
 ```
 
 Running the script:
@@ -141,12 +157,32 @@ npx simple-import-replacement
 
 will update `example.ts` to:
 
-```typescript
+```javascript
 import something from 'com/test/foo/bar/something';
 import anotherThing from 'com/test/foo/another/anotherThing';
-import React from 'react';
+import React from 'com/test/foo/bar/something';
 export { MyComponent } from 'com/components/MyComponent';
 ```
+
+and `styles.css` to:
+
+```css
+@import 'com/test/foo/bar/variables.css';
+@import 'com/components/common.css';
+```
+
+## Supported File Types
+
+The script now supports the following file types:
+
+- TypeScript (.ts, .tsx)
+- JavaScript (.js, .jsx)
+- CSS (.css)
+- SCSS (.scss)
+- Less (.less)
+- Sass (.sass)
+
+It will process both import statements in TypeScript/JavaScript files and `@import` rules in CSS and other stylesheet files.
 
 ## Contributing
 

@@ -1,94 +1,104 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const { promisify } = require('util');
 const glob = promisify(require('glob'));
 
-/**
- * Processes a single file, replacing relative imports with absolute imports.
- *
- * @param {string} filePath - The path to the file to process.
- * @param {string} rootDir - The root directory for the project.
- * @returns {Promise<boolean>} - Returns true if the file was changed, otherwise false.
- */
+const FILE_EXTENSIONS = ['ts', 'tsx', 'js', 'jsx', 'css', 'scss', 'less', 'sass'];
+const DEFAULT_PATTERN = `**/*.{${FILE_EXTENSIONS.join(',')}}`;
+
+const JS_IMPORT_REGEX = /^(import|export) (.*? from ['"])(\..*?|\/.*?)(['"];)$/;
+const CSS_IMPORT_REGEX = /^(@import ['"])(\..*?|\/.*?)(['"];)$/;
+
+function replaceImportPath(match, prefix, importPath, suffix, filePath, rootDir) {
+  const absolutePath = path.resolve(path.dirname(filePath), importPath);
+  const relativePath = path.relative(rootDir, absolutePath);
+  return `${prefix}${relativePath}${suffix}`;
+}
+
+async function processLine(line, filePath, rootDir) {
+  if (JS_IMPORT_REGEX.test(line)) {
+    return line.replace(JS_IMPORT_REGEX, (...args) => 
+      replaceImportPath(...args, filePath, rootDir));
+  } else if (CSS_IMPORT_REGEX.test(line)) {
+    return line.replace(CSS_IMPORT_REGEX, (...args) => 
+      replaceImportPath(...args, filePath, rootDir));
+  }
+  return line;
+}
+
 async function processFile(filePath, rootDir) {
-  const data = await fs.promises.readFile(filePath, 'utf8');
-  const lines = data.split('\n');
-  const updatedLines = lines.map((line) => {
-    const importRegex = /^(import|export) (.*? from ['"])(\..*?|\/.*?)(['"];)$/;
-    if (importRegex.test(line)) {
-      const newLine = line.replace(importRegex, (match, p1, p2, p3, p4) => {
-        const absolutePath = path.resolve(path.dirname(filePath), p3);
-        const relativePath = path.relative(rootDir, absolutePath);
-        return `${p1} ${p2}${relativePath}${p4}`;
-      });
-      return newLine;
+  try {
+    const data = await fs.readFile(filePath, 'utf8');
+    const lines = data.split('\n');
+    const updatedLines = await Promise.all(lines.map(line => processLine(line, filePath, rootDir)));
+    const updatedData = updatedLines.join('\n');
+    
+    if (data !== updatedData) {
+      await fs.writeFile(filePath, updatedData, 'utf8');
+      return true;
     }
-    return line;
-  });
-
-  const updatedData = updatedLines.join('\n');
-  if (data !== updatedData) {
-    await fs.promises.writeFile(filePath, updatedData, 'utf8');
-    return true;
+    return false;
+  } catch (error) {
+    console.error(`Error processing file ${filePath}:`, error);
+    return false;
   }
-  return false;
 }
 
-/**
- * Processes multiple files, replacing relative imports with absolute imports.
- *
- * @param {string[]} files - The list of files to process.
- * @param {string} rootDir - The root directory for the project.
- * @returns {Promise<string[]>} - Returns a list of changed files.
- */
 async function processFiles(files, rootDir) {
-  let changedFiles = [];
-  for (const file of files) {
-    const stats = await fs.promises.stat(file);
-    if (stats.isDirectory()) {
-      console.log(`Skipping directory: ${file}`);
-      continue;
+  const results = await Promise.all(files.map(async file => {
+    try {
+      const stats = await fs.stat(file);
+      if (stats.isDirectory()) {
+        console.log(`Skipping directory: ${file}`);
+        return null;
+      }
+      const changed = await processFile(file, rootDir);
+      console.log(`Processed: ${file}`);
+      return changed ? file : null;
+    } catch (error) {
+      console.error(`Error processing ${file}:`, error);
+      return null;
     }
-    const changed = await processFile(file, rootDir);
-    if (changed) {
-      changedFiles.push(file);
-    }
-    console.log(`Processed: ${file}`);
-  }
-  return changedFiles;
+  }));
+  return results.filter(Boolean);
 }
 
-
-/**
- * Main function to execute the script.
- * Parses arguments, processes files, and logs the results.
- */
-async function main() {
-  const args = process.argv.slice(2);
+function parseArguments(args) {
   let rootDir = process.cwd();
-  let patterns = ['**/*.{ts,tsx,js,jsx}'];
+  let patterns = [];
 
   if (args.length > 0) {
-    rootDir = path.resolve(args[0]);
-    patterns = args.slice(1);
+    const rootDirArg = args.find(arg => arg.startsWith('--root-dir='));
+    if (rootDirArg) {
+      rootDir = path.resolve(rootDirArg.split('=')[1]);
+      patterns = args.filter(arg => !arg.startsWith('--root-dir='));
+    } else {
+      rootDir = path.resolve(args[0]);
+      patterns = args.slice(1);
+    }
   }
 
-  if (!patterns.length) {
-    patterns = ['**/*.{ts,tsx,js,jsx}'];
+  if (patterns.length === 0) {
+    patterns = [DEFAULT_PATTERN];
   }
+
+  return { rootDir, patterns };
+}
+
+async function main(args) {
+  const { rootDir, patterns } = parseArguments(args);
 
   let files = [];
-
   for (const pattern of patterns) {
     const matchedFiles = await glob(pattern, { cwd: rootDir, absolute: true });
     files = files.concat(matchedFiles);
   }
 
-  if (!files.length) {
+  if (files.length === 0) {
     console.error('No files found matching the specified patterns.');
-    process.exit(1);
+    return;
   }
 
   const changedFiles = await processFiles(files, rootDir);
@@ -101,7 +111,11 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main(process.argv.slice(2)).catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = { main, processFile, processLine }; // Exporting for potential testing
